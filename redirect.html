@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+  <html lang="nl">
+  <head>
+  <meta charset="UTF-8">
+  <title>JobSurfing</title>
+  </head>
+  <body>
+  <script>
+    var cohort = new URLSearchParams(location.search).get('c');
+  var fallback = 'https://jobsurfing.nl/';
+
+  if (!cohort) {
+    location.replace(fallback);
+  } else {
+    fetch('cohorts/' + encodeURIComponent(cohort) + '.xml')
+            .then(function (r) { return r.text(); })
+      .then(function (xml) {
+                var doc = new DOMParser().parseFromString(xml, 'application/xml');
+        var urls = Array.prototype.map.call(doc.querySelectorAll('loc'), function (n) {
+          return n.textContent;
+        });
+        location.replace(urls.length ? urls[Math.floor(Math.random() * urls.length)] : fallback);
+      })
+      .catch(function () { location.replace(fallback); });
+  }
+</script>
+  </body>
+  </html>
